@@ -32,13 +32,8 @@ std::vector<std::string> demonic::vector_from_file(std::string s, bool binary) {
     std::fstream file_stream(s);
     std::vector<std::string> vec;
     std::string str;
-    while (file_stream >> str) {
-        std::string result;
-        for (char c : str) {
-            if (c != '\n')
-                result.push_back(c);
-        }
-        vec.push_back(result);
+    while (getline(file_stream, str)) {
+        vec.emplace_back(str.c_str());
     }
     return vec;
 }
@@ -46,13 +41,13 @@ std::vector<std::string> demonic::vector_from_file(std::string s, bool binary) {
 std::vector<std::string> demonic::vector_from_bash(std::string s) {
     std::vector<std::string> data;
     FILE *stream;
-    const int maxBuffer = 256;
-    char buffer[maxBuffer];
+    const int max_buffer = 256;
+    char buffer[max_buffer];
     s.append(" 2>&1");
     stream = popen(s.c_str(), "r");
     if (stream) {
         while (!feof(stream))
-            if (fgets(buffer, maxBuffer, stream) != nullptr)
+            if (fgets(buffer, max_buffer, stream) != nullptr)
                 data.emplace_back(buffer);
         pclose(stream);
     }
